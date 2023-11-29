@@ -1,3 +1,7 @@
+<?php
+require 'dbconnect.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,25 +15,9 @@
 <body>
     <?php
     require 'header.php';
+    require 'about.php';
     ?>
-    <div class="container">
-        <h2 class="text-center">iDiscuss Categories : </h2>
-        <div class="row">
-            <!-- Use a For Loop to iterate... -->
-            <div class="col-md-4">
-                <div class="card" style="width: 18rem;">
-                    <img src="https://source.unsplash.com/500x400/?car,audi" class="card-img-top" alt="...">
-                    <!-- We use unsplash Apis... -->
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a href="#" class="btn btn-primary">View Threads</a>
-                    </div>
-                </div>
-            </div>
 
-        </div>
-    </div>
 
     <?php require 'footer.php'; ?>
 
