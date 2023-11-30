@@ -14,6 +14,7 @@
 
 <body>
   <?php
+  require 'dbconnect.php';
   session_start();
   echo '
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -32,15 +33,17 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Categories
+             Top Categories
             </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            <ul class="dropdown-menu">';
+  //Pull Categories from Db...
+  $sql = "SELECT category_name,category_id from `categories` LIMIT 3";
+  $result = mysqli_query($con, $sql);
+  while ($row = mysqli_fetch_assoc($result)) {
+    echo '
+              <li><a class="dropdown-item" href="/forum/threads.php?catid=' . $row['category_id'] . '">' . $row['category_name'] . '</a></li>';
+  }
+  echo '
             </ul>
           </li>
           <li class="nav-item">
@@ -50,15 +53,15 @@
        <div class="row mx-2">';
 
   if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-    echo '   <form class="d-flex" role="search">
-  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+    echo '   <form class="d-flex" action="search.php" method="get" role="search">
+  <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
   <button class="btn btn-outline-success" type="submit">Search</button>
   <span class="text-white ms-2">Welcome ' . $_SESSION['useremail'] . '</span>
   <a class="btn btn-danger ms-2" href="/forum/logout.php">Logout</a>
 </form>';
   } else {
-    echo '   <form class="d-flex" role="search">
-    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+    echo '   <form class="d-flex" role="search" action="search.php" method="get">
+    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
     <button class="btn btn-outline-success" type="submit">Search</button>
     <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">
     Login

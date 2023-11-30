@@ -34,7 +34,10 @@ require 'dbconnect.php';
     $method = $_SERVER['REQUEST_METHOD'];
     if ($method == 'POST') {
         $comment = $_POST['comment'];
-        // die("The id in insertion is $id");
+        // To Prevent from XSS ATTACK, we Convert Comments to safe Strings...
+        $comment = str_replace('<', '&lt;', $comment);
+        $comment = str_replace('>', '&rt;', $comment);
+
         $sql = "INSERT INTO `comments` (`comment_content`, `thread_id`, `comment_time`) VALUES ('$comment', '$id', current_timestamp());";
         $result = mysqli_query($con, $sql);
         if ($result) {
@@ -59,15 +62,23 @@ require 'dbconnect.php';
         <h1>Post a Comment : </h1>
         <!-- Comments are being done... -->
         <?php
-        echo '<div class="formQ  bg-light mt-2 mb-3 p-3">
-            <form action="/forum/threadq.php?threadid=' . $id . '" method="post">
-                <div class="form-group">
+        if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+            echo '
+        <div class="container media" style="margin-top: 50px;">
+            <h1>Ask a Question : </h1>
+            <div class="formQ  bg-light mt-2 mb-3 p-3">
+                <form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
+                   <div class="form-group">
                     <label for="exampleInputPassword1">Type your Comment</label>
                     <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary my-2">Post Comment</button>
-            </form>
-        </div>';
+                </form>
+            </div>';
+        } else {
+            echo "<div class='alert alert-danger mt-4'>User is not Logged In. Please Login to Post a Comment...</div>";
+        }
+
         //Comments are Fetched...
         $id = $_GET['threadid'];
         // die("Id is $id");
@@ -81,6 +92,12 @@ require 'dbconnect.php';
             $cid = $row['comment_id'];
             $content = $row['comment_content'];
             $comment_time = $row['comment_time'];
+
+            //User Identity is here...
+            // $thread_user_id = $row['thread_user_id'];
+            // $sql2 = "SELECT user_email FROM `users` WHERE `sno` = '$thread_user_id'";
+            // $result2 =  mysqli_query($con, $sql2);
+            // $row2 = mysqli_fetch_assoc($result2);
 
             //    Media-Objects are Used...
             echo '<div class="media mt-4">

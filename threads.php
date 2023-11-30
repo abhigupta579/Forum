@@ -1,5 +1,6 @@
 <?php
 require 'dbconnect.php';
+require 'header.php';
 ?>
 
 <!DOCTYPE html>
@@ -9,13 +10,11 @@ require 'dbconnect.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 
 <body>
     <?php
-    require 'header.php';
 
     //Particular Thread is being Fetched...
     $id = $_GET['catid'];  //catid is used to get Category ID...
@@ -39,12 +38,13 @@ require 'dbconnect.php';
     </div>
 
 
-    <!-- Questions are being Asked here about that Particular Thread... -->
+    <!-- Questions are being Asked here by FORM about that Particular Thread... -->
     <?php
-    echo '
+    //If User is Logged in then he can Start Discussions...
+    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+        echo '
     <div class="container media" style="margin-top: 50px;">
         <h1>Ask a Question : </h1>
-        <!-- Questions are being Asked here by FORMS... -->
         <div class="formQ  bg-light mt-2 mb-3 p-3">
             <form action="/forum/threads.php?catid=' . $id . '" method="post">
                 <div class="form-group">
@@ -60,7 +60,9 @@ require 'dbconnect.php';
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>';
-
+    } else {
+        echo "<div class='alert alert-danger mt-4'>User is not Logged In. You can only Read but can't start Discussions...Please login to Start Discussion...</div>";
+    }
 
     //Adding Questions via FORM...
     $method = $_SERVER['REQUEST_METHOD'];
@@ -93,6 +95,11 @@ require 'dbconnect.php';
         $title = $row['thread_title'];
         $desc = $row['thread_desc'];
         $thread_time = $row['timestamp'];
+        //User is Used to find its Identity that who asked a Question...
+        $thread_user_id = $row['thread_user_id'];
+        $sql2 = "SELECT user_email FROM `users` WHERE `sno` = '$thread_user_id'";
+        $result2 =  mysqli_query($con, $sql2);
+        $row2 = mysqli_fetch_assoc($result2);
 
         //    Media-Objects are Used...
         //Questions are Found here...
@@ -100,7 +107,7 @@ require 'dbconnect.php';
             <img class="mr-3" src="https://source.unsplash.com/40x40/?coding,code" class="card-img"
                 alt="Generic placeholder image" style="float:left; margin-right: 5px">
             <div class="media-body">
-            <p><b>User</b> asked at ' . $thread_time . '</p>
+            <p><b>' . $row2['user_email'] . '</b> asked on ' . $thread_time . '</p>
                 <h6 class="mt-0 ms-5" style="margin-top: -20px; display: inline-block"><a href="/forum/threadq.php?threadid=' . $id . '" class="text-dark text-decoration-none">' . $title . '</a></h6><h6 class="ms-5">' . $desc . '
             </h6></div>
     </div>';
@@ -119,11 +126,9 @@ require 'dbconnect.php';
 
     <?php require 'footer.php'; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous">
     </script>
 </body>
 
